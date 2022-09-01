@@ -2,15 +2,6 @@ import 'package:fano/fano.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('A group of tests', () {
-    final awesome = Awesome();
-
-    setUp(() {
-      // Additional setup goes here.
-    });
-
-    test('First Test', () {
-      expect(awesome.isAwesome, isTrue);
-    });
-  });
+  print("running");
+  print(New(1, 5));
 }
