@@ -35,10 +35,8 @@ Dict New(int cap, int maxValue) {
     return Dict();
   }
 
-  int sizeLVal = max0(((maxValue / cap) - 1)
-      .toInt()
-      .bitLength); //Returns the minimum number of bits required to store this integer.
-  int sizeH = cap + (maxValue >> sizeLVal); //Need to see if this works.
+  int sizeLVal = max0(((maxValue / cap) - 1).toInt().bitLength); //Returns the minimum number of bits required to store this integer.
+  int sizeH = cap + (maxValue >> sizeLVal).toInt(); //Need to see if this works.
 
   final dict = Dict();
   dict.b = <int>[];
@@ -51,22 +49,6 @@ Dict New(int cap, int maxValue) {
   return Dict();
 }
 
-// max0 returns the maximum of x and 0.
-int max0(int x) {
-  if (x <= 0) {
-    return 0;
-  }
-  return x;
-}
-
-// Len returns the current number of entries in the dictionary.
-// When the dictionary is built with From, Len and Cap always
-// return the same result.
-int Len(Dict d) {
-  //Need to check how Len works.
-  return d.n;
-}
-
 // From constructs a dictionary from a list of values.
 Dict? From(var values) {
   try {
@@ -77,10 +59,55 @@ Dict? From(var values) {
     print(e);
     return null;
   }
+  try {
+    Dict d = New(values.length, values[values.length - 1]);
+    return build(values, d);
+  } catch (e) {
+    print(e);
+    return null;
+  }
+}
 
-  Dict d = New(values.length, values[values.length - 1]);
+// Append appends a value to the dictionary and returns the key. If something
+// goes wrong, Append returns -1. In that case, no value is added.
+int Append(int value, Dict d) {
+  // TODO: Return vervangen door error. Definieer een err var voor elk soort error.
 
-  return null; //missing build
+  // check values
+  if (d.n != 0 && (d.cap <= d.n || value < d.pValue || d.maxValue < value)) {
+    return -1;
+  }
+  d.pValue = value;
+  d.n++;
+
+  // higher bits processing
+  int hValue = value >> d.sizeLValue + (d.n - 1).toInt();
+  d.b[hValue >> 6] |= 1 << (hValue & 63);
+  if (d.sizeLValue == 0) {
+    return d.n - 1;
+  }
+
+  // lower bits processing
+  int lValue = value & d.lMask;
+  int offset = d.sizeH + (d.n - 1) * d.sizeLValue;
+  d.b[offset >> 6] |= lValue << (offset & 63);
+  int msb = lValue >> (64 - offset & 63);
+  if (msb != 0) {
+    d.b[offset >> 6 + 1] = msb;
+  }
+  return d.n - 1;
+}
+
+// Cap returns the maximum number of entries in the dictionary.
+int Cap(Dict d) {
+  return d.cap;
+}
+
+// Len returns the current number of entries in the dictionary.
+// When the dictionary is built with From, Len and Cap always
+// return the same result.
+int Len(Dict d) {
+  return d.n;
 }
 
 // build encodes a monotone increasing array of positive integers
@@ -94,8 +121,7 @@ Dict? build(var values, Dict d) {
   for (var i = 0; i < values.length; i++) {
     try {
       if (values[i] < vmin) {
-        throw Exception(
-            "ef: dictionary requires an array that increases monotonically");
+        throw Exception("ef: dictionary requires an array that increases monotonically");
       }
     } catch (e) {
       print(e);
@@ -119,38 +145,24 @@ Dict? build(var values, Dict d) {
     }
     offset += d.sizeLValue;
   }
+
+  d.n = values.length;
+
+  return d;
 }
 
-// Append appends a value to the dictionary and returns the key. If something
-// goes wrong, Append returns -1. In that case, no value is added.
-int Append(int value, Dict d) {// TODO: Return vervangen door error. Definieer een err var voor elk soort error.
-
-  // check values
-  if(d.n != 0 && (d.cap <= d.n || value < d.pValue || d.maxValue < value)){
-    return -1;
+// max0 returns the maximum of x and 0.
+int max0(int x) {
+  if (x <= 0) {
+    return 0;
   }
-  d.pValue = value;
-  d.n++;
-
-  // higher bits processing
-  int hValue = value>>d.sizeLValue + (d.n-1).toInt();
-  d.b[hValue>>6] |= 1 << (hValue & 63)
-  if(d.sizeLValue == 0){
-    return d.n - 1;
-  }
-
-  // lower bits processing
-  int lValue = value & d.lMask;
-  int offset = d.sizeH + (d.n-1)*d.sizeLValue;
-  d.b[offset>>6] |= lValue << (offset & 63);
-  int msb = lValue >> (64 - offset & 63);
-  if(msb != 0){
-    d.b[offset>>6+1] = msb;
-  }
-  return d.n - 1;
+  return x;
 }
 
-// Cap returns the maximum number of entries in the dictionary.
-int Cap(Dict d){
-  return d.cap;
-}
+//int Value(int k, Dict d) {
+//  if (k < 0 || d.n <= k) {
+//    return 0;
+//  }
+//  return d.hValue(k) << d.sizeLValue | d.lValue(k);
+//}
+
