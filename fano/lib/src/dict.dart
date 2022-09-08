@@ -1,8 +1,11 @@
 // TODO: Put public facing types in this file.
 
+import 'dart:ffi';
 import 'dart:html';
 import 'dart:io';
 import 'dart:js_util';
+import 'dart:typed_data';
+//import 'package:xpx_chain_sdk/xpx_sdk.dart';
 
 /// Checks if you are awesome. Spoiler: you are.
 //class Awesome {
@@ -81,7 +84,7 @@ int Append(int value, Dict d) {
   d.n++;
 
   // higher bits processing
-  int hValue = value >> d.sizeLValue + (d.n - 1).toInt();
+  Uint64 hValue = value >> d.sizeLValue + (d.n - 1).toInt();
   d.b[hValue >> 6] |= 1 << (hValue & 63);
   if (d.sizeLValue == 0) {
     return d.n - 1;
