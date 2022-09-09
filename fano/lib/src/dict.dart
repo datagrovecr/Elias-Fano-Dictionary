@@ -66,7 +66,7 @@ Tuple2<Dict?,Object?> From(var values) {
   }
   try {
     Dict d = New(values.length, values[values.length - 1]).item1;
-    return Tuple2(build(values, d), null);
+    return Tuple2(build(values, d).item1, null);
   } catch (e) {
     print(e);
     return Tuple2(null, e);
@@ -164,6 +164,7 @@ int max0(int x) {
   return x;
 }
 
+// Value returns the k-th value in the dictionary.
 Tuple2<int, bool> Value(int k, Dict d) {
   if (k < 0 || d.n <= k) {
     return Tuple2(0, false);
@@ -171,6 +172,52 @@ Tuple2<int, bool> Value(int k, Dict d) {
   return Tuple2(hValue(k, d) << d.sizeLValue | lValue(k, d), true);
 }
 
+// Value2 returns the k-th value in the dictionary.
+Tuple2<int, bool> Value2(int k, Dict d){
+  if(k<0 || d.n <= k){
+    return Tuple2(0, false);
+  }
+  return Tuple2((select1(k, d)-k)<<d.sizeLValue | lValue(k, d), true);
+}
+
+// Values reads all numbers from the dictionary.
+List<int> Values(Dict d){
+  List<int> values = [];
+  int k = 0;
+
+  if (d.sizeLValue == 0){
+    for (var j = 0; j < d.b.length; j++) {
+      int p64 = j << 6;
+      while(d.b[j]!=0){
+        values[k] = p64 + d.b[j].toRadixString(2).split('').reversed.takeWhile((e) => e == '0').length - k;
+        d.b[j] &= d.b[j]-1;
+        k++;
+      }
+    }
+    return values;
+  }
+  List<int> a = d.b.sublist(0,((d.sizeH+63)>>63));
+  int lValFilter = d.sizeH;
+
+  for (var j = 0; j < a.length; j++) {
+    a[j] &= 1<<lValFilter - 1;
+    int p64 = j<< 6;
+    while(a[j]!=0){
+      int hValue = p64 + a[j].toRadixString(2).split('').reversed.takeWhile((e) => e == '0').length - k;
+      values[k] = hValue<<d.sizeLValue | lValue(k, d);
+      a[j] &= a[j] - 1;
+      k++;
+    }
+    lValFilter -= 64;
+  }
+  return values;
+}
+
+int hValue2(int k, Dict d){
+  return select1(k, d) - k;
+}
+
+// hValue2 returns the higher bits (bucket value) of the k-th value.
 int lValue(int k, Dict d) {
   int offset = d.sizeH + k * d.sizeLValue;
   int off63 = offset & 63;
