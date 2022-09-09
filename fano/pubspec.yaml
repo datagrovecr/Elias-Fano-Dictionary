@@ -9,6 +9,7 @@ environment:
 dependencies:
   bitcount: ^0.3.0
   path: ^1.8.0
+  tuple: ^2.0.0
   xpx_chain_sdk: 0.0.7+9
 
 dev_dependencies:
