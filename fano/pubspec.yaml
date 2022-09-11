@@ -7,6 +7,7 @@ environment:
   sdk: '>=2.17.7 <3.0.0'
 
 dependencies:
+  binary: ^3.0.1
   bitcount: ^0.3.0
   path: ^1.8.0
   tuple: ^2.0.0
