@@ -28,7 +28,7 @@ class Dict {
 // New constructs a dictionary with a capacity of n entries. The dictionary
 // can accept positive numbers, smaller than or equal to maxValue. The values
 // needed to be in monotonic, non-decreasing way.
-Tuple2<Dict, Object?> New(int cap, int maxValue) {
+Tuple2<Dict, Object?> funcNew(int cap, int maxValue) {
   print("doing it");
 
   try {
@@ -40,7 +40,9 @@ Tuple2<Dict, Object?> New(int cap, int maxValue) {
     return Tuple2(Dict(), e);
   }
 
-  int sizeLVal = max0(((maxValue / cap) - 1).toInt().bitLength); //Returns the minimum number of bits required to store this integer.
+  int sizeLVal = max0(((maxValue / cap) - 1)
+      .toInt()
+      .bitLength); //Returns the minimum number of bits required to store this integer.
   int sizeH = cap + (maxValue >> sizeLVal).toInt(); //Need to see if this works.
 
   final dict = Dict();
@@ -55,7 +57,7 @@ Tuple2<Dict, Object?> New(int cap, int maxValue) {
 }
 
 // From constructs a dictionary from a list of values.
-Tuple2<Dict?,Object?> From(var values) {
+Tuple2<Dict?, Object?> from(var values) {
   try {
     if (values.empty) {
       throw Exception("ef: dictionary does not support an empty values list");
@@ -65,7 +67,7 @@ Tuple2<Dict?,Object?> From(var values) {
     return Tuple2(null, e);
   }
   try {
-    Dict d = New(values.length, values[values.length - 1]).item1;
+    Dict d = funcNew(values.length, values[values.length - 1]).item1;
     return Tuple2(build(values, d).item1, null);
   } catch (e) {
     print(e);
@@ -75,7 +77,7 @@ Tuple2<Dict?,Object?> From(var values) {
 
 // Append appends a value to the dictionary and returns the key. If something
 // goes wrong, Append returns -1. In that case, no value is added.
-int Append(int value, Dict d) {
+int append(int value, Dict d) {
   // TODO: Return vervangen door error. Definieer een err var voor elk soort error.
 
   // check values
@@ -104,21 +106,21 @@ int Append(int value, Dict d) {
 }
 
 // Cap returns the maximum number of entries in the dictionary.
-int Cap(Dict d) {
+int cap(Dict d) {
   return d.cap;
 }
 
 // Len returns the current number of entries in the dictionary.
 // When the dictionary is built with From, Len and Cap always
 // return the same result.
-int Len(Dict d) {
+int len(Dict d) {
   return d.n;
 }
 
 // build encodes a monotone increasing array of positive integers
 // into an Elias-Fano bit sequence. build will return an error
 // when the values are not increasing monotonically.
-Tuple2<Dict?,Object?> build(var values, Dict d) {
+Tuple2<Dict?, Object?> build(var values, Dict d) {
   int vmin = 0;
 
   int offset = d.sizeH;
@@ -126,7 +128,8 @@ Tuple2<Dict?,Object?> build(var values, Dict d) {
   for (var i = 0; i < values.length; i++) {
     try {
       if (values[i] < vmin) {
-        throw Exception("ef: dictionary requires an array that increases monotonically");
+        throw Exception(
+            "ef: dictionary requires an array that increases monotonically");
       }
     } catch (e) {
       print(e);
@@ -165,7 +168,7 @@ int max0(int x) {
 }
 
 // Value returns the k-th value in the dictionary.
-Tuple2<int, bool> Value(int k, Dict d) {
+Tuple2<int, bool> value(int k, Dict d) {
   if (k < 0 || d.n <= k) {
     return Tuple2(0, false);
   }
@@ -173,38 +176,52 @@ Tuple2<int, bool> Value(int k, Dict d) {
 }
 
 // Value2 returns the k-th value in the dictionary.
-Tuple2<int, bool> Value2(int k, Dict d){
-  if(k<0 || d.n <= k){
+Tuple2<int, bool> value2(int k, Dict d) {
+  if (k < 0 || d.n <= k) {
     return Tuple2(0, false);
   }
-  return Tuple2((select1(k, d)-k)<<d.sizeLValue | lValue(k, d), true);
+  return Tuple2((select1(k, d) - k) << d.sizeLValue | lValue(k, d), true);
 }
 
 // Values reads all numbers from the dictionary.
-List<int> Values(Dict d){
+List<int> values(Dict d) {
   List<int> values = [];
   int k = 0;
 
-  if (d.sizeLValue == 0){
+  if (d.sizeLValue == 0) {
     for (var j = 0; j < d.b.length; j++) {
       int p64 = j << 6;
-      while(d.b[j]!=0){
-        values[k] = p64 + d.b[j].toRadixString(2).split('').reversed.takeWhile((e) => e == '0').length - k;
-        d.b[j] &= d.b[j]-1;
+      while (d.b[j] != 0) {
+        values[k] = p64 +
+            d.b[j]
+                .toRadixString(2)
+                .split('')
+                .reversed
+                .takeWhile((e) => e == '0')
+                .length -
+            k;
+        d.b[j] &= d.b[j] - 1;
         k++;
       }
     }
     return values;
   }
-  List<int> a = d.b.sublist(0,((d.sizeH+63)>>63));
+  List<int> a = d.b.sublist(0, ((d.sizeH + 63) >> 63));
   int lValFilter = d.sizeH;
 
   for (var j = 0; j < a.length; j++) {
-    a[j] &= 1<<lValFilter - 1;
-    int p64 = j<< 6;
-    while(a[j]!=0){
-      int hValue = p64 + a[j].toRadixString(2).split('').reversed.takeWhile((e) => e == '0').length - k;
-      values[k] = hValue<<d.sizeLValue | lValue(k, d);
+    a[j] &= 1 << lValFilter - 1;
+    int p64 = j << 6;
+    while (a[j] != 0) {
+      int hValue = p64 +
+          a[j]
+              .toRadixString(2)
+              .split('')
+              .reversed
+              .takeWhile((e) => e == '0')
+              .length -
+          k;
+      values[k] = hValue << d.sizeLValue | lValue(k, d);
       a[j] &= a[j] - 1;
       k++;
     }
@@ -213,7 +230,7 @@ List<int> Values(Dict d){
   return values;
 }
 
-int hValue2(int k, Dict d){
+int hValue2(int k, Dict d) {
   return select1(k, d) - k;
 }
 
@@ -232,7 +249,7 @@ int lValue(int k, Dict d) {
 // NextGEQ returns the first value in the dictionary equal to or larger than
 // the given value. NextGEQ fails when there exists no value larger than or
 // equal to value. If so, it returns -1 as index.
-Tuple2<int, int> NextGEQ(int value, Dict d) {
+Tuple2<int, int> nextGEQ(int value, Dict d) {
   if (d.maxValue < value) {
     return Tuple2(-1, d.maxValue);
   }
@@ -258,24 +275,28 @@ Tuple2<int, int> NextGEQ(int value, Dict d) {
   // scan potential solutions
   int templValue = value & d.lMask;
 
-  while{
-    while(buf==0){
+  while (true) {
+    while (buf == 0) {
       pos64 += 64;
-      buf = d.b[pos64>>6];
+      buf = d.b[pos64 >> 6];
     }
 
-    pos63 = buf.toRadixString(2).split('').reversed.takeWhile((e) => e == '0').length;
+    pos63 = buf
+        .toRadixString(2)
+        .split('')
+        .reversed
+        .takeWhile((e) => e == '0')
+        .length;
 
     // check potential solution
     int hVal = pos64 + pos63 - k;
 
-
-    if(hValue < hVal || templValue <= lValue(k, d)){
+    if (hValue < hVal || templValue <= lValue(k, d)) {
       break;
     }
 
     buf &= buf - 1;
     k++;
   }
-  return Tuple2(k, (pos64+pos63-k)<<d.sizeLValue | lValue(k, d));
+  return Tuple2(k, (pos64 + pos63 - k) << d.sizeLValue | lValue(k, d));
 }
