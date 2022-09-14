@@ -1,11 +1,12 @@
 // TODO: Put public facing types in this file.
-
+/*
 import 'dart:ffi';
 import 'dart:html';
 import 'dart:io';
 import 'dart:js_util';
 import 'dart:typed_data';
 import 'package:xpx_chain_sdk/xpx_chain_sdk.dart';
+*/
 import 'package:fano/src/select.dart';
 import 'package:tuple/tuple.dart';
 
@@ -29,8 +30,6 @@ class Dict {
 // can accept positive numbers, smaller than or equal to maxValue. The values
 // needed to be in monotonic, non-decreasing way.
 Tuple2<Dict, Object?> funcNew(int cap, int maxValue) {
-  print("doing it");
-
   try {
     if (cap == 0) {
       throw Exception("ef: dictionary does not support an empty values list");
@@ -40,9 +39,7 @@ Tuple2<Dict, Object?> funcNew(int cap, int maxValue) {
     return Tuple2(Dict(), e);
   }
 
-  int sizeLVal = max0(((maxValue / cap) - 1)
-      .toInt()
-      .bitLength); //Returns the minimum number of bits required to store this integer.
+  int sizeLVal = max0(((maxValue / cap) - 1).toInt().bitLength); //Returns the minimum number of bits required to store this integer.
   int sizeH = cap + (maxValue >> sizeLVal).toInt(); //Need to see if this works.
 
   final dict = Dict();
@@ -59,7 +56,7 @@ Tuple2<Dict, Object?> funcNew(int cap, int maxValue) {
 // From constructs a dictionary from a list of values.
 Tuple2<Dict?, Object?> from(var values) {
   try {
-    if (values.empty) {
+    if (values == null) {
       throw Exception("ef: dictionary does not support an empty values list");
     }
   } catch (e) {
@@ -128,8 +125,7 @@ Tuple2<Dict?, Object?> build(var values, Dict d) {
   for (var i = 0; i < values.length; i++) {
     try {
       if (values[i] < vmin) {
-        throw Exception(
-            "ef: dictionary requires an array that increases monotonically");
+        throw Exception("ef: dictionary requires an array that increases monotonically");
       }
     } catch (e) {
       print(e);
@@ -192,14 +188,7 @@ List<int> values(Dict d) {
     for (var j = 0; j < d.b.length; j++) {
       int p64 = j << 6;
       while (d.b[j] != 0) {
-        values[k] = p64 +
-            d.b[j]
-                .toRadixString(2)
-                .split('')
-                .reversed
-                .takeWhile((e) => e == '0')
-                .length -
-            k;
+        values[k] = p64 + d.b[j].toRadixString(2).split('').reversed.takeWhile((e) => e == '0').length - k;
         d.b[j] &= d.b[j] - 1;
         k++;
       }
@@ -213,14 +202,7 @@ List<int> values(Dict d) {
     a[j] &= 1 << lValFilter - 1;
     int p64 = j << 6;
     while (a[j] != 0) {
-      int hValue = p64 +
-          a[j]
-              .toRadixString(2)
-              .split('')
-              .reversed
-              .takeWhile((e) => e == '0')
-              .length -
-          k;
+      int hValue = p64 + a[j].toRadixString(2).split('').reversed.takeWhile((e) => e == '0').length - k;
       values[k] = hValue << d.sizeLValue | lValue(k, d);
       a[j] &= a[j] - 1;
       k++;
@@ -281,12 +263,7 @@ Tuple2<int, int> nextGEQ(int value, Dict d) {
       buf = d.b[pos64 >> 6];
     }
 
-    pos63 = buf
-        .toRadixString(2)
-        .split('')
-        .reversed
-        .takeWhile((e) => e == '0')
-        .length;
+    pos63 = buf.toRadixString(2).split('').reversed.takeWhile((e) => e == '0').length;
 
     // check potential solution
     int hVal = pos64 + pos63 - k;
