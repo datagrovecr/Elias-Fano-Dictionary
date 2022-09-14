@@ -26,6 +26,7 @@ void main() {
         int gotSizeT = d.sizeH + d.n * d.sizeLValue;
         int wantSizeT = testCases[i].sizeT;
 
+        print(testCases[i].inp);
         expect(gotSizeLValue, wantSizeLValue);
         expect(gotSizeT, wantSizeT);
       });

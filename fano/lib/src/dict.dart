@@ -7,6 +7,8 @@ import 'dart:js_util';
 import 'dart:typed_data';
 import 'package:xpx_chain_sdk/xpx_chain_sdk.dart';
 */
+import 'dart:typed_data';
+
 import 'package:fano/src/select.dart';
 import 'package:tuple/tuple.dart';
 
@@ -16,7 +18,8 @@ import 'package:tuple/tuple.dart';
 //}
 
 class Dict {
-  List<int> b = []; // Elias-Fano representation of the bit sequence
+  //List<int> b = []; // Elias-Fano representation of the bit sequence
+  Uint8List b = BytesBuilder().toBytes();
   int sizeLValue = 0; // bit length of a lValue
   int sizeH = 0; // bit length of the higher bits array H
   int n = 0; // number of entries in the dictionary
@@ -43,14 +46,15 @@ Tuple2<Dict, Object?> funcNew(int cap, int maxValue) {
   int sizeH = cap + (maxValue >> sizeLVal).toInt(); //Need to see if this works.
 
   final dict = Dict();
-  dict.b = <int>[];
+  //dict.b = <int>[];
+  dict.b = Uint8List((sizeH + cap * sizeLVal + 63) >> 6);
   dict.sizeLValue = sizeLVal;
   dict.sizeH = sizeH;
-  dict.lMask = 1 << sizeLVal - 1;
+  dict.lMask = (1 << sizeLVal) - 1;
   dict.maxValue = maxValue;
   dict.cap = cap;
 
-  return Tuple2(Dict(), null);
+  return Tuple2(dict, null);
 }
 
 // From constructs a dictionary from a list of values.
