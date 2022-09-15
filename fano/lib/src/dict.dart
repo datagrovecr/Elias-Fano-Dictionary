@@ -42,7 +42,7 @@ Tuple2<Dict, Object?> funcNew(int cap, int maxValue) {
     return Tuple2(Dict(), e);
   }
 
-  int sizeLVal = max0(((maxValue / cap) - 1).toInt().bitLength); //Returns the minimum number of bits required to store this integer.
+  int sizeLVal = max0((maxValue ~/ cap).bitLength - 1); //Returns the minimum number of bits required to store this integer.
   int sizeH = cap + (maxValue >> sizeLVal).toInt(); //Need to see if this works.
 
   final dict = Dict();
