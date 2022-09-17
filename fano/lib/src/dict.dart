@@ -18,8 +18,8 @@ import 'package:tuple/tuple.dart';
 //}
 
 class Dict {
-  //List<int> b = []; // Elias-Fano representation of the bit sequence
-  Uint8List b = BytesBuilder().toBytes();
+  //Uint8List b = BytesBuilder().toBytes(); // Elias-Fano representation of the bit sequence
+  List<int> b = [];
   int sizeLValue = 0; // bit length of a lValue
   int sizeH = 0; // bit length of the higher bits array H
   int n = 0; // number of entries in the dictionary
@@ -46,8 +46,8 @@ Tuple2<Dict, Object?> funcNew(int cap, int maxValue) {
   int sizeH = cap + (maxValue >> sizeLVal).toInt(); //Need to see if this works.
 
   final dict = Dict();
-  //dict.b = <int>[];
-  dict.b = Uint8List((sizeH + cap * sizeLVal + 63) >> 6);
+  dict.b = List<int>.filled((sizeH + cap * sizeLVal + 63) >> 6, 0, growable: true);
+  //dict.b = Uint8List((sizeH + cap * sizeLVal + 63) >> 6);
   dict.sizeLValue = sizeLVal;
   dict.sizeH = sizeH;
   dict.lMask = (1 << sizeLVal) - 1;
@@ -89,7 +89,7 @@ int append(int value, Dict d) {
   d.n++;
 
   // higher bits processing
-  int hValue = value >> d.sizeLValue + (d.n - 1).toInt();
+  int hValue = (value >> d.sizeLValue) + (d.n - 1);
   d.b[hValue >> 6] |= 1 << (hValue & 63);
   if (d.sizeLValue == 0) {
     return d.n - 1;
@@ -139,7 +139,7 @@ Tuple2<Dict?, Object?> build(var values, Dict d) {
 
     //higher bits processing
     int hValue = (values[i] >> d.sizeLValue) + i.toInt();
-    d.b[offset >> 6] |= 1 << (hValue & 63);
+    d.b[hValue >> 6] |= 1 << (hValue & 63);
     if (d.sizeLValue == 0) {
       continue;
     }
@@ -168,7 +168,7 @@ int max0(int x) {
 }
 
 // Value returns the k-th value in the dictionary.
-Tuple2<int, bool> value(int k, Dict d) {
+Tuple2<int, bool> Value(int k, Dict d) {
   if (k < 0 || d.n <= k) {
     return Tuple2(0, false);
   }
@@ -185,7 +185,7 @@ Tuple2<int, bool> value2(int k, Dict d) {
 
 // Values reads all numbers from the dictionary.
 List<int> values(Dict d) {
-  List<int> values = [];
+  List<int> values = List<int>.filled(d.n, 0, growable: true);
   int k = 0;
 
   if (d.sizeLValue == 0) {
@@ -199,11 +199,11 @@ List<int> values(Dict d) {
     }
     return values;
   }
-  List<int> a = d.b.sublist(0, ((d.sizeH + 63) >> 63));
+  List<int> a = d.b.sublist(0, (d.sizeH + 63) >> 6);
   int lValFilter = d.sizeH;
 
   for (var j = 0; j < a.length; j++) {
-    a[j] &= 1 << lValFilter - 1;
+    a[j] &= (1 << lValFilter) - 1;
     int p64 = j << 6;
     while (a[j] != 0) {
       int hValue = p64 + a[j].toRadixString(2).split('').reversed.takeWhile((e) => e == '0').length - k;

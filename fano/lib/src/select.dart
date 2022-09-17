@@ -8,7 +8,7 @@ int hValue(int i, Dict d) {
   for (var j = 0; j < d.b.length; j++) {
     int ones = d.b[j].bitCount();
     if ((i - ones) < 0) {
-      return (select64(d.b[j], i) + j << 6 - nOnes);
+      return (select64(d.b[j], i) + (j << 6) - nOnes);
     }
 
     i -= ones;
