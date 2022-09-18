@@ -121,11 +121,17 @@ void main() {
     for (var i = 0; i < testCases.length; i++) {
       TestCase tc = testCases[i];
       Dict? d = from(tc.inp).item1;
+      List<int> val = values(d!);
+      //print("${values(d)}  ${val}");
+
       test("Testing Values", () {
-        for (var j = 0; j < values(d!).length; j++) {
+        for (var j = 0; j < val.length; j++) {
+          //print(values(d));
+          //print("${values(d)[j]}  ${val[j]}");
           int want = tc.inp[j];
-          int got = values(d)[j]; //Values(d)[j] don't work. Check the 8th case, for an unknown reason b just have 0 in it's array spaces
-          //int got = values(from(tc.inp).item1!)[j]; //THIS IS REALLY WEIRD. This one is working but IT'S THE SAME!
+          int got = val[j];
+          //print(values(d)[j]);
+          //int got = values(from(tc.inp).item1!)[j];
 
           expect(got, want);
         }
@@ -136,30 +142,30 @@ void main() {
 
 void fillTestCases(List testCases) {
   //1ST
-  testCases.add(TestCase(Uint8List.fromList([0]), [int.parse("1", radix: 2)], 0, 1));
+  testCases.add(TestCase([0], [int.parse("1", radix: 2)], 0, 1));
   //2ND
-  testCases.add(TestCase(Uint8List.fromList([32]), [int.parse("0000010", radix: 2)], 5, 7));
+  testCases.add(TestCase([32], [int.parse("0000010", radix: 2)], 5, 7));
   //3RD
-  testCases.add(TestCase(Uint8List.fromList([2, 4, 8, 30, 32]), [int.parse("00100000101010000010101", radix: 2)], 2, 23));
+  testCases.add(TestCase([2, 4, 8, 30, 32], [int.parse("00100000101010000010101", radix: 2)], 2, 23));
   //4TH
-  testCases.add(TestCase(Uint8List.fromList([5, 5, 5, 5, 5, 5, 5, 5, 5, 31]), [int.parse("11111111111000000000000011111111100", radix: 2)], 1, 35));
+  testCases.add(TestCase([5, 5, 5, 5, 5, 5, 5, 5, 5, 31], [int.parse("11111111111000000000000011111111100", radix: 2)], 1, 35));
   //5TH
-  testCases.add(TestCase(Uint8List.fromList([1, 4, 7, 18, 24, 26, 30, 31]), [int.parse("1000010111001010001000000101001", radix: 2)], 1, 31));
+  testCases.add(TestCase([1, 4, 7, 18, 24, 26, 30, 31], [int.parse("1000010111001010001000000101001", radix: 2)], 1, 31));
   //6TH
-  testCases.add(TestCase(Uint8List.fromList([5, 8, 8, 15, 32]), [int.parse("00110000011000001011010", radix: 2)], 2, 23));
+  testCases.add(TestCase([5, 8, 8, 15, 32], [int.parse("00110000011000001011010", radix: 2)], 2, 23));
   //7TH
-  testCases.add(TestCase(Uint8List.fromList([0, 8, 32]), [int.parse("0000000001000101", radix: 2)], 3, 16));
+  testCases.add(TestCase([0, 8, 32], [int.parse("0000000001000101", radix: 2)], 3, 16));
   //8TH
-  testCases.add(TestCase(Uint8List.fromList([1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49]),
+  testCases.add(TestCase([1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49],
       [int.parse("0010010010010010010010010010010010010010010010010010010010010010", radix: 2), int.parse("1001001001", radix: 2)], 0, 74));
   //9TH
-  testCases.add(TestCase(Uint8List.fromList([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+  testCases.add(TestCase([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [int.parse("111111111111111111111111111111111111", radix: 2)], 0, 36));
   //10TH
-  testCases.add(TestCase(Uint8List.fromList([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]),
+  testCases.add(TestCase([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
       [int.parse("111111111111111111111111111111111110", radix: 2)], 0, 36));
   //11TH
-  testCases.add(TestCase(Uint8List.fromList([3, 9, 130]), [int.parse("0001001001000111000011", radix: 2)], 5, 22));
+  testCases.add(TestCase([3, 9, 130], [int.parse("0001001001000111000011", radix: 2)], 5, 22));
 }
 
 
