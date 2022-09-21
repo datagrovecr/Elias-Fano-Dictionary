@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:fano/src/select.dart';
@@ -7,6 +8,7 @@ import 'package:fano/src/dict.dart';
 import 'dart:convert';
 
 import 'package:tuple/tuple.dart';
+import 'package:xpx_chain_sdk/xpx_chain_sdk.dart';
 
 class TestCase {
   //Uint8List inp = BytesBuilder().toBytes();
@@ -27,11 +29,11 @@ void main() {
     for (var i = 0; i < testCases.length; i++) {
       TestCase tc = testCases[i];
       Dict? d = from(tc.inp).item1;
-      test("Testing from", () {
+
+      test('Testing SizeLValue and SizeT', () {
         Object? e = from(tc.inp).item2;
         expect(e, null);
-      });
-      test('Testing SizeLValue and SizeT', () {
+
         int gotSizeLValue = d!.sizeLValue;
         int wantSizeLValue = tc.sizeLValue;
         int gotSizeT = d.sizeH + d.n * d.sizeLValue;
@@ -70,11 +72,11 @@ void main() {
     for (var i = 0; i < testCases.length; i++) {
       TestCase tc = testCases[i];
       Dict? d = funcNew(tc.inp.length, tc.inp[tc.inp.length - 1]).item1;
-      test("Testing funcNew", () {
+
+      test("Testing Append", () {
         Object? e = funcNew(tc.inp.length, tc.inp[tc.inp.length - 1]).item2;
         expect(e, null);
-      });
-      test("Testing Append", () {
+
         for (var j = 0; j < tc.inp.length; j++) {
           int k = append(tc.inp[j], d);
           int want = tc.inp[j];
@@ -127,11 +129,67 @@ void main() {
       test("Testing Values", () {
         for (var j = 0; j < val.length; j++) {
           //print(values(d));
-          //print("${values(d)[j]}  ${val[j]}");
+          print("${values(d)[j]}  ${val[j]}");
           int want = tc.inp[j];
           int got = val[j];
           //print(values(d)[j]);
           //int got = values(from(tc.inp).item1!)[j];
+
+          expect(got, want);
+        }
+      });
+    }
+  });
+
+  group("Group Test Values Long", () {
+    final n = 10000;
+    final max = 100;
+    final iterations = 10000;
+
+    var inp = List<int>.filled(n, 0, growable: true);
+
+    for (var k = 0; k < iterations; k++) {
+      List<int> a = inp.sublist(0, 1 + Random().nextInt(max));
+      int prev = 0;
+
+      for (var i = 0; i < a.length; i++) {
+        prev += Random().nextInt(max);
+        inp[i] = prev;
+      }
+
+      test("From ${n}", () {
+        Dict? d = from(inp).item1;
+        List<int> val = values(d!);
+
+        Object? e = from(inp).item2;
+        expect(e, null);
+
+        for (var i = 0; i < val.length; i++) {
+          int want = inp[i];
+          int got = val[i];
+
+          expect(got, want);
+        }
+      });
+
+      test("Append ${n}", () {
+        Dict? d = funcNew(inp.length, inp[inp.length - 1]).item1;
+        Object? e = funcNew(inp.length, inp[inp.length - 1]).item2;
+        expect(e, null);
+
+        List<int> val = values(d);
+
+        for (var i = 0; i < inp.length; i++) {
+          var v = inp[i];
+
+          var j = append(v, d);
+
+          expect(j != -1, true);
+        }
+
+        for (var i = 0; i < val.length; i++) {
+          int want = inp[i];
+          int got = val[i];
 
           expect(got, want);
         }
