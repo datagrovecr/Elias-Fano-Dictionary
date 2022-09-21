@@ -142,29 +142,31 @@ void main() {
   });
 
   group("Group Test Values Long", () {
-    final n = 10000;
+    final n = 1000;
     final max = 100;
-    final iterations = 10000;
+    final iterations = 1000;
 
+    var a = List<int>.filled(n, 0, growable: true);
     var inp = List<int>.filled(n, 0, growable: true);
 
     for (var k = 0; k < iterations; k++) {
-      List<int> a = inp.sublist(0, 1 + Random().nextInt(max));
+      inp = a.sublist(0, 1 + Random().nextInt(max));
       int prev = 0;
 
-      for (var i = 0; i < a.length; i++) {
+      for (var i = 0; i < inp.length; i++) {
         prev += Random().nextInt(max);
         inp[i] = prev;
       }
-
       test("From ${n}", () {
         Dict? d = from(inp).item1;
-        List<int> val = values(d!);
+        List<int> val = List<int>.filled(0, 0, growable: true);
+        val = values(d!);
 
         Object? e = from(inp).item2;
         expect(e, null);
 
         for (var i = 0; i < val.length; i++) {
+          print("${values(d)[i]}  ${val[i]}");
           int want = inp[i];
           int got = val[i];
 
@@ -224,6 +226,29 @@ void fillTestCases(List testCases) {
       [int.parse("111111111111111111111111111111111110", radix: 2)], 0, 36));
   //11TH
   testCases.add(TestCase([3, 9, 130], [int.parse("0001001001000111000011", radix: 2)], 5, 22));
+  //12TH
+  testCases.add(TestCase([6, 7, 10], [int.parse("01010011000", radix: 2)], 1, 11));
+  //13TH
+  testCases.add(TestCase([1, 4, 7, 18, 24, 26, 30, 31], [int.parse("1000010111001010001000000101001", radix: 2)], 1, 31));
+  //14TH
+  testCases.add(TestCase([5, 8, 8, 15, 32], [int.parse("00110000011000001011010", radix: 2)], 2, 23));
+  //15TH
+  testCases.add(TestCase([5, 8, 9, 10, 14, 32], [int.parse("00101001000110000010111010", radix: 2)], 2, 26));
+  //16TH
+  testCases
+      .add(TestCase([3, 4, 7, 13, 14, 15, 21, 25, 36, 38, 54, 62], [int.parse("101010000101111001110011100100001100010100111001101", radix: 2)], 2, 51));
+  //17TH
+  testCases.add(TestCase([2, 3, 5, 7, 11, 13, 24], [int.parse("01111101000000101001010110", radix: 2)], 1, 26));
+  //18TH
+  testCases.add(TestCase([4, 5, 6, 13, 22, 25], [int.parse("011001100100101001001110", radix: 2)], 2, 24));
+  //19TH
+  testCases.add(TestCase([3, 4, 7, 13, 14, 15, 21, 43], [int.parse("1101111001110011100000100111001101", radix: 2)], 2, 34));
+  //20TH
+  testCases.add(TestCase([3, 4, 13, 15, 24, 26, 27, 29], [int.parse("110011011011010000010100001010", radix: 2)], 1, 30));
+  //21TH
+  testCases.add(TestCase([8, 9, 11, 13, 16, 18, 23], [int.parse("1001110100101001010110000", radix: 2)], 1, 25));
+  //22TH
+  testCases.add(TestCase([4, 13, 15, 24, 26, 27, 29], [int.parse("0111100011010010111000110010", radix: 2)], 2, 28));
 }
 
 

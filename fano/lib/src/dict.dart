@@ -199,7 +199,8 @@ List<int> values(Dict d) {
     }
     return values;
   }
-  List<int> a = d.b.sublist(0, (d.sizeH + 63) >> 6);
+  List<int> a = List<int>.filled(0, 0, growable: true);
+  a = d.b.sublist(0, (d.sizeH + 63) >> 6);
   int lValFilter = d.sizeH;
 
   for (var j = 0; j < a.length; j++) {
