@@ -147,9 +147,9 @@ Tuple2<Dict?, Object?> build(var values, Dict d) {
     //lower bits processing
     int lValue = values[i] & d.lMask;
     d.b[offset >> 6] |= lValue << (offset & 63);
-    int msb = lValue >> (64 - offset & 63);
+    int msb = lValue >> (64 - (offset & 63));
     if (msb != 0) {
-      d.b[offset >> 6 + 1] = msb;
+      d.b[(offset >> 6) + 1] = msb;
     }
     offset += d.sizeLValue;
   }
