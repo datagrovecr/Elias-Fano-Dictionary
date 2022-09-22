@@ -207,8 +207,8 @@ List<int> values(Dict d) {
     a[j] &= (1 << lValFilter) - 1;
     int p64 = j << 6;
     while (a[j] != 0) {
-      int hValue = p64 + a[j].toRadixString(2).split('').reversed.takeWhile((e) => e == '0').length - k;
-      values[k] = hValue << d.sizeLValue | lValue(k, d);
+      int hvalue = p64 + a[j].toRadixString(2).split('').reversed.takeWhile((e) => e == '0').length - k;
+      values[k] = hvalue << d.sizeLValue | lValue(k, d);
       a[j] &= a[j] - 1;
       k++;
     }

@@ -1,5 +1,5 @@
 //import "dict.dart";
-import 'dict.dart';
+import 'Dict.dart';
 import 'package:bitcount/bitcount.dart';
 
 // hValue returns the higher bit value (bucket value) of the i-th number.

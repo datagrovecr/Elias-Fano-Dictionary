@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'package:fano/src/select.dart';
 import 'package:test/test.dart';
-import 'package:fano/src/dict.dart';
+import 'package:fano/src/Dict.dart';
 import 'dart:convert';
 
 import 'package:tuple/tuple.dart';
@@ -53,91 +53,79 @@ void main() {
     }
   });
 
-  group("Group Test Values", () {
+  test("Testing Value", () {
     for (var i = 0; i < testCases.length; i++) {
       TestCase tc = testCases[i];
       Dict? d = from(tc.inp).item1;
-      test("Testing Values", () {
-        for (var j = 0; j < tc.inp.length; j++) {
-          int want = tc.inp[j];
-          int got = Value(j, d!).item1;
+      for (var j = 0; j < tc.inp.length; j++) {
+        int want = tc.inp[j];
+        int got = Value(j, d!).item1;
 
-          expect(got, want);
-        }
-      });
+        expect(got, want);
+      }
     }
   });
 
-  group("Group Test New/Append", () {
+  test("Testing Append", () {
     for (var i = 0; i < testCases.length; i++) {
       TestCase tc = testCases[i];
       Dict? d = funcNew(tc.inp.length, tc.inp[tc.inp.length - 1]).item1;
+      Object? e = funcNew(tc.inp.length, tc.inp[tc.inp.length - 1]).item2;
+      expect(e, null);
 
-      test("Testing Append", () {
-        Object? e = funcNew(tc.inp.length, tc.inp[tc.inp.length - 1]).item2;
-        expect(e, null);
+      for (var j = 0; j < tc.inp.length; j++) {
+        int k = append(tc.inp[j], d);
+        int want = tc.inp[j];
+        int got = Value(j, d).item1;
 
-        for (var j = 0; j < tc.inp.length; j++) {
-          int k = append(tc.inp[j], d);
-          int want = tc.inp[j];
-          int got = Value(j, d).item1;
-
-          expect(k != -1, true);
-          expect(got, want);
-        }
-      });
+        expect(k != -1, true);
+        expect(got, want);
+      }
     }
   });
 
-  group("Group test HValue", () {
+  test("Testing HValue", () {
     for (var i = 0; i < testCases.length; i++) {
       TestCase tc = testCases[i];
       Dict? d = from(tc.inp).item1;
-      test("Testing HValue", () {
-        for (var j = 0; j < tc.inp.length; j++) {
-          int want = tc.inp[j] >> d!.sizeLValue;
-          int got = hValue(j, d);
+      for (var j = 0; j < tc.inp.length; j++) {
+        int want = tc.inp[j] >> d!.sizeLValue;
+        int got = hValue(j, d);
 
-          expect(got, want);
-        }
-      });
+        expect(got, want);
+      }
     }
   });
 
-  group("Group Test lValue", () {
+  test("Testing lValue", () {
     for (var i = 0; i < testCases.length; i++) {
       TestCase tc = testCases[i];
       Dict? d = from(tc.inp).item1;
-      test("Testing lValue", () {
-        for (var j = 0; j < tc.inp.length; j++) {
-          int want = tc.inp[j] & ((1 << d!.sizeLValue) - 1);
-          int got = lValue(j, d);
+      for (var j = 0; j < tc.inp.length; j++) {
+        int want = tc.inp[j] & ((1 << d!.sizeLValue) - 1);
+        int got = lValue(j, d);
 
-          expect(got, want);
-        }
-      });
+        expect(got, want);
+      }
     }
   });
 
-  group("Group Test Values", () {
+  test("Testing Values", () {
     for (var i = 0; i < testCases.length; i++) {
       TestCase tc = testCases[i];
       Dict? d = from(tc.inp).item1;
       List<int> val = values(d!);
       //print("${values(d)}  ${val}");
+      for (var j = 0; j < val.length; j++) {
+        //print(values(d));
+        print("${values(d)[j]}  ${val[j]}");
+        int want = tc.inp[j];
+        int got = val[j];
+        //print(values(d)[j]);
+        //int got = values(from(tc.inp).item1!)[j];
 
-      test("Testing Values", () {
-        for (var j = 0; j < val.length; j++) {
-          //print(values(d));
-          print("${values(d)[j]}  ${val[j]}");
-          int want = tc.inp[j];
-          int got = val[j];
-          //print(values(d)[j]);
-          //int got = values(from(tc.inp).item1!)[j];
-
-          expect(got, want);
-        }
-      });
+        expect(got, want);
+      }
     }
   });
 
@@ -150,17 +138,16 @@ void main() {
     var inp = List<int>.filled(n, 0, growable: true);
 
     for (var k = 0; k < iterations; k++) {
-      inp = a.sublist(0, 1 + Random().nextInt(max));
+      inp = a.sublist(0, 1 + Random(18).nextInt(n));
       int prev = 0;
 
       for (var i = 0; i < inp.length; i++) {
-        prev += Random().nextInt(max);
+        prev += Random(18).nextInt(max);
         inp[i] = prev;
       }
       test("From ${n}", () {
         Dict? d = from(inp).item1;
-        List<int> val = List<int>.filled(0, 0, growable: true);
-        val = values(d!);
+        List<int> val = values(d!);
 
         Object? e = from(inp).item2;
         expect(e, null);
